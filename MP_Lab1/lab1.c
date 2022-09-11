@@ -36,29 +36,32 @@ int main(int argc, char** argv)
 
     for(int j=1; j<threads + 1; j++)
     {
-    t = clock();
 
+    for(int i=0; i<column; i++){
+        t = clock();
+        max = -1;
     /* Find the maximal element */
-    #pragma omp parallel num_threads(j) shared(array, count, column) reduction(max: max) default(none)
+    #pragma omp parallel num_threads(j) shared(array, count, column, i) reduction(max: max) default(none)
     {
-        #pragma omp for
-        for(int i=0; i<column; i++)
-        {
+  //      #pragma omp for
+        
+            #pragma omp for
             for(int j=0; j<count; j++){
             if(array[i][j] > max) {
                 max = array[i][j]; 
             }
             }
-        }
-        printf("-- My lmax is: %d;\n", max);
+        
+        printf(" My lmax is: %d;\n", max);
+        //}
     
-    
-        }
-
-    printf("======\nMax is: %d;\n", max);
+      //  }
+    }
+    printf("\nMax is: %d;\n", max);
     t = clock() - t;
     time_taken = ((double)t)/CLOCKS_PER_SEC;
     printf("time spent is %f \n", time_taken);
-}
+    printf(" END\n \n \n");
+}} //dopisal }}
 return 0;
 }
