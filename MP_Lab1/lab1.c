@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    const int count = 1000;     ///< Number of array elements
+    const int count = 1000000;     ///< Number of array elements
     const int threads = 8;         ///< Number of parallel threads to use
     const int random_seed = 920215; ///< RNG seed
     int column = 10;
@@ -16,9 +16,17 @@ int main(int argc, char** argv)
     double time_taken = 0;
     /* Initialize the RNG */
     srand(random_seed);
+    double delta;
+    struct timespec tstart = {0,0}, tend = {0,0};
+
+    double time_spec_seconds(struct timespec* ts) {
+    
+    return (double) ts->tv_sec + (double) ts->tv_nsec * 1.0e-9;
+    }
 
     /* Determine the OpenMP support */
     printf("OpenMP: %d;\n======\n", _OPENMP);
+    printf("time -> %ld", time(NULL));
 
     /* Generate the random array */
     array = (int**)malloc(column * sizeof(int*)); //line * column
@@ -38,7 +46,7 @@ int main(int argc, char** argv)
     {
 
     for(int i=0; i<column; i++){
-        t = clock();
+        int t = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tstart);
         max = -1;
     /* Find the maximal element */
     #pragma omp parallel num_threads(j) shared(array, count, column, i) reduction(max: max) default(none)
@@ -52,15 +60,14 @@ int main(int argc, char** argv)
             }
             }
         
-        printf(" My lmax is: %d;\n", max);
         //}
     
       //  }
     }
-    printf("\nMax is: %d;\n", max);
-    t = clock() - t;
-    time_taken = ((double)t)/CLOCKS_PER_SEC;
-    printf("time spent is %f \n", time_taken);
+    printf("\nArray number : %d Max is: %d;\n",i, max);
+    t = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tend);
+    delta = time_spec_seconds(&tend) - time_spec_seconds(&tstart);
+    printf("Array number: %d with threads number: %d time spent is %f \n",i,j, delta);
     printf(" END\n \n \n");
 }} //dopisal }}
 return 0;
