@@ -11,9 +11,9 @@ int main(int argc, char** argv)
 
     int** array = 0;                 ///< The array we need to find the max in
     int  max   = -1;                ///< The maximal element
-    int t = 0;                   ///  Used time
-    int t_end=0;
-    double time_taken = 0;
+                                    
+    struct timeval start, end;
+
     /* Initialize the RNG */
     srand(random_seed);
     double delta;
@@ -44,9 +44,9 @@ int main(int argc, char** argv)
 
     for(int j=1; j<threads + 1; j++)
     {
-
+        printf("threads number: %d, lets go \n", j);
+    gettimeofday(&start, NULL);
     for(int i=0; i<column; i++){
-        int t = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tstart);
         max = -1;
     /* Find the maximal element */
     #pragma omp parallel num_threads(j) shared(array, count, column, i) reduction(max: max) default(none)
@@ -65,10 +65,16 @@ int main(int argc, char** argv)
       //  }
     }
     printf("\nArray number : %d Max is: %d;\n",i, max);
-    t = clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tend);
-    delta = time_spec_seconds(&tend) - time_spec_seconds(&tstart);
-    printf("Array number: %d with threads number: %d time spent is %f \n",i,j, delta);
     printf(" END\n \n \n");
-}} //dopisal }}
+}
+    gettimeofday(&end, NULL);
+    
+    delta = ((end.tv_sec  - start.tv_sec) * 1000000u + 
+         end.tv_usec - start.tv_usec);
+    printf("threads number: %d time spent is %f \n", j, delta);
+
+
+
+} //dopisal }}
 return 0;
 }
