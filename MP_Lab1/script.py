@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 fd = open("test.txt", "r")
-for line in fd:
-    plt.plot(int(line))
-
+file = fd.read()
+file = file.replace(".000000", "")
+file = file.split()
+plt.scatter([1,2,3,4,5,6,7,8],file)
+plt.show()
