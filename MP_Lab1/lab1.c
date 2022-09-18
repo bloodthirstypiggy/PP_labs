@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 int main(int argc, char** argv)
 {
@@ -9,6 +10,7 @@ int main(int argc, char** argv)
     const int random_seed = 920215; ///< RNG seed
     int column = 10;
 
+    double time;
     int** array = 0;                 ///< The array we need to find the max in
     int  max   = -1;                ///< The maximal element
     FILE* fd;
@@ -38,6 +40,7 @@ int main(int argc, char** argv)
     {
         printf("threads number: %d \n", j);
     gettimeofday(&start, NULL);
+    time = omp_get_wtime();
     for(int i=0; i<column; i++){
         max = -1;
     /* Find the maximal element */
@@ -54,11 +57,11 @@ int main(int argc, char** argv)
     }
 }
     gettimeofday(&end, NULL);
-    
+    time =omp_get_wtime() - time;
     delta = ((end.tv_sec  - start.tv_sec) * 1000000u + 
          end.tv_usec - start.tv_usec);
-    printf("time: %f \n", delta);
-    fprintf(fd, "%f\n", delta);
+    fprintf(fd, "%f\n", time);
+    printf("time is: %f \n", time);
 
 
 
